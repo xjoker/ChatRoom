@@ -22,9 +22,12 @@ namespace ChatServer
 
         static void Main(string[] args)
         {
+            Program pr = new Program();
+            pr.ServerStart();
+            Console.ReadKey();
         }
 
-        private void ServerStart()
+        public void ServerStart()
         {
             //设定IP地址
             IPAddress ip = IPAddress.Parse(ChatConfig.IP);
@@ -42,7 +45,18 @@ namespace ChatServer
 
                 //开始监听进程，10个阻塞
                 socket.Listen(10);
-               
+
+                Console.WriteLine("启动监听...");
+
+                //开启监听线程
+                thread = new Thread(Listen);
+                thread.IsBackground = true;
+                thread.Start(socket);
+
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("出现异常:"+ex);
             }
         }
 
@@ -50,7 +64,7 @@ namespace ChatServer
         /// 将套接字作为参数传入其中
         /// </summary>
         /// <param name="s"></param>
-        private ArrayList Listen(object s)
+        private void Listen(object s)
         {
             Socket socket = s as Socket;
 
@@ -67,7 +81,11 @@ namespace ChatServer
 
                 Console.WriteLine("有客户链接上了： "+remoteIPAddress);
 
-                threadGetMsg = new Thread();
+
+                //启动线程接收消息
+                threadGetMsg = new Thread(ReceiveMsg);
+                threadGetMsg.IsBackground = true;
+                threadGetMsg.Start(sConnect);
 
             }
         }
