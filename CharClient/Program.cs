@@ -15,9 +15,10 @@ namespace CharClient
             {
                 string sendMsg = Console.ReadLine();
                 cs.SendMessage(sendMsg);
+                
             }
 
-            Console.ReadKey();
+            //Console.ReadKey();
         }
 
        
